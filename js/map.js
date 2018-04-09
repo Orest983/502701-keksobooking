@@ -78,16 +78,6 @@ var getRandomMinMax = function (min, max) {
   return rand;
 };
 
-var getObjectKeyByValue = function (obj, val) {
-  var invertObj = {};
-  var objKey = Object.keys(obj);
-  var objValue = Object.values(obj);
-  for (var i = 0; i < objKey.length; i++) {
-    invertObj[objValue[i]] = objKey[i];
-  }
-  return invertObj[val];
-};
-
 var getRandomLenghtOfFeatures = function () {
   return OFFER_FEATURES.slice(getRandomMinMax(0, OFFER_FEATURES.length - 1));
 };
