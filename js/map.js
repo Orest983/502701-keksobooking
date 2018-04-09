@@ -112,7 +112,7 @@ var getOfferTypeByOfferTitle = function (title) {
   for (var i = 0; i < offerTypesKeys.length; i++) {
     var type = OFFER_TYPES[offerTypesKeys[i]];
     if (title.search(type.toLowerCase()) !== -1) {
-      searchResult = type;
+      searchResult = offerTypesKeys[i];
       break;
     }
   }
@@ -166,10 +166,7 @@ var generateRandomOffers = function () {
       title: arTitles[i],
       address: offerAddres,
       price: getRandomMinMax(OFFER_MIN_PRICE, OFFER_MAX_PRICE),
-      type: getObjectKeyByValue(
-          OFFER_TYPES,
-          getOfferTypeByOfferTitle(arTitles[i])
-      ),
+      type: getOfferTypeByOfferTitle(arTitles[i]),
       rooms: getRandomMinMax(OFFER_ROOMS_MIN, OFFER_ROOMS_MAX),
       guests: getRandomMinMax(OFFER_GUESTS_MIN, OFFER_GUESTS_MAX),
       checkin:
