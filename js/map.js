@@ -324,9 +324,9 @@ var getInitialPinAddress = function () {
 };
 
 // get pin address
-var getPinAddress = function (x, y, width, height) {
-  var x = setPinOffsetX(x, width);
-  var y = setPinOffsetY(y, height) + window.scrollY;
+var getPinAddress = function (mouseX, mouseY, width, height) {
+  var x = setPinOffsetX(mouseX, width);
+  var y = setPinOffsetY(mouseY, height) + window.scrollY;
   return x + ', ' + y;
 };
 
