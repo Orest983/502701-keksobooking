@@ -7,7 +7,7 @@ var MAP_PIN = MAP_TEMPLATE.querySelector('.map__pin');
 var MAP_CARD = MAP_TEMPLATE.querySelector('.map__card');
 var MAP_POPUP_FEATURE = MAP_TEMPLATE.querySelector('.popup__feature');
 var MAP_POPUP_PHOTO = MAP_TEMPLATE.querySelector('.popup__photo');
-var MAIN_PIN = MAP.querySelector('.map__pin--main');
+var MAP_MAIN_PIN = MAP.querySelector('.map__pin--main');
 
 var AD_FORM = document.querySelector('.ad-form');
 var AD_FIELDSETS = AD_FORM.querySelectorAll('fieldset');
@@ -203,7 +203,7 @@ var generatePins = function (ads) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < ads.length; i++) {
     var pin = pinTemplate.cloneNode(true);
-    pin.id = 'offer-' + i;
+    pin.dataset['offerId'] = i;
     pin.style.left = setPinOffsetX(ads[i].location.x, MAP_PIN_WIDTH) + 'px';
     pin.style.top = setPinOffsetY(ads[i].location.y, MAP_PIN_HEIGHT) + 'px';
     pin.querySelector('img').src = ads[i].author.avatar;
@@ -315,10 +315,18 @@ var enableFormFieldsets = function () {
   }
 };
 
+// get
+
+var getInitialPinAddress = function () {
+  var x = parseInt(MAP_MAIN_PIN.style.left, 10);
+  var y = parseInt(MAP_MAIN_PIN.style.top, 10);
+  return x + ', ' + y;
+};
+
 // get pin address
-var getPinAddress = function (evt, width, height) {
-  var x = setPinOffsetX(evt.clientX, width);
-  var y = setPinOffsetY(evt.clientY, height);
+var getPinAddress = function (x, y, width, height) {
+  var x = setPinOffsetX(x, width);
+  var y = setPinOffsetY(y, height) + window.scrollY;
   return x + ', ' + y;
 };
 
@@ -343,7 +351,9 @@ var closeOfferPopup = function () {
 
 // event handlers
 var onMainPinMouseUp = function (evt) {
-  var pinAddress = getPinAddress(evt, MAP_MAIN_PIN_WIDTH, MAP_MAIN_PIN_HEIGHT);
+  var x = evt.clientX;
+  var y = evt.clientY;
+  var pinAddress = getPinAddress(x, y, MAP_MAIN_PIN_WIDTH, MAP_MAIN_PIN_HEIGHT);
   setInputAddressValue(pinAddress);
   enableMap();
   enableAdForm();
@@ -352,20 +362,12 @@ var onMainPinMouseUp = function (evt) {
 };
 
 var onPinClick = function (evt) {
-  var popupClose;
-  var searchClass = 'map__pin';
-  var target = evt.target;
-  var id = target.id ? target.id : target.parentElement.id;
-  var offer = id.charAt(id.length - 1);
-
-  if (
-    target.classList.contains(searchClass) ||
-    target.parentElement.classList.contains(searchClass)
-  ) {
-    if (offer) {
-      closeOfferPopup();
-      showOfferPopup(offers[offer]);
-    }
+  var offer;
+  var target = evt.target.closest('.map__pin');
+  if (target && !target.classList.contains('map__pin--main')) {
+    offer = target.dataset['offerId'];
+    closeOfferPopup();
+    showOfferPopup(offers[offer]);
   }
 };
 
@@ -375,7 +377,8 @@ var onPopUpCloseClick = function () {
 };
 
 MAP_PINS.addEventListener('click', onPinClick);
-MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
+MAP_MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
 
+setInputAddressValue(getInitialPinAddress());
 disableFormFieldsets();
 var offers = generateRandomOffers();
