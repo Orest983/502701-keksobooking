@@ -7,9 +7,17 @@ var MAP_PIN = MAP_TEMPLATE.querySelector('.map__pin');
 var MAP_CARD = MAP_TEMPLATE.querySelector('.map__card');
 var MAP_POPUP_FEATURE = MAP_TEMPLATE.querySelector('.popup__feature');
 var MAP_POPUP_PHOTO = MAP_TEMPLATE.querySelector('.popup__photo');
+var MAIN_PIN = MAP.querySelector('.map__pin--main');
+
+var AD_FORM = document.querySelector('.ad-form');
+var AD_FIELDSETS = AD_FORM.querySelectorAll('fieldset');
+var ADDRESS_INPUT = AD_FORM.querySelector('#address');
 
 var MAP_PIN_WIDTH = 50;
 var MAP_PIN_HEIGHT = 70;
+
+var MAP_MAIN_PIN_WIDTH = 65;
+var MAP_MAIN_PIN_HEIGHT = 65;
 
 var MAP_X_COORD_MIN = 300;
 var MAP_X_COORD_MAX = 900;
@@ -182,12 +190,12 @@ var generateRandomOffers = function () {
   return ads;
 };
 
-var setPinOffsetX = function (x) {
-  return x - MAP_PIN_WIDTH / 2;
+var setPinOffsetX = function (x, width) {
+  return x - width / 2;
 };
 
-var setPinOffsetY = function (y) {
-  return y - MAP_PIN_HEIGHT;
+var setPinOffsetY = function (y, height) {
+  return y - height;
 };
 
 var generatePins = function (ads) {
@@ -195,8 +203,9 @@ var generatePins = function (ads) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < ads.length; i++) {
     var pin = pinTemplate.cloneNode(true);
-    pin.style.left = setPinOffsetX(ads[i].location.x) + 'px';
-    pin.style.top = setPinOffsetY(ads[i].location.y) + 'px';
+    pin.id = 'offer-' + i;
+    pin.style.left = setPinOffsetX(ads[i].location.x, MAP_PIN_WIDTH) + 'px';
+    pin.style.top = setPinOffsetY(ads[i].location.y, MAP_PIN_HEIGHT) + 'px';
     pin.querySelector('img').src = ads[i].author.avatar;
     pin.querySelector('img').alt = ads[i].offer.title;
     fragment.appendChild(pin);
@@ -272,10 +281,101 @@ var generateMapCard = function (ad) {
   return mapCard;
 };
 
-// Generate random offers array with 8 objects;
-var offers = generateRandomOffers();
-var offer = offers[0];
+// disable map
+var disableMap = function () {
+  MAP.classList.add('map--faded');
+};
 
-MAP.classList.remove('map--faded');
-MAP_PINS.appendChild(generatePins(offers));
-MAP.insertBefore(generateMapCard(offer), MAP_FILTER_CONTAINER);
+// enableMap
+var enableMap = function () {
+  MAP.classList.remove('map--faded');
+};
+
+// disnable ad form
+var disableAdForm = function () {
+  AD_FORM.classList.add('ad-form--disabled');
+};
+
+// enable ad form
+var enableAdForm = function () {
+  AD_FORM.classList.remove('ad-form--disabled');
+};
+
+// disable form inputs
+var disableFormFieldsets = function () {
+  for (var i = 0; i < AD_FIELDSETS.length; i++) {
+    AD_FIELDSETS[i].disabled = true;
+  }
+};
+
+// enable form inputs
+var enableFormFieldsets = function () {
+  for (var i = 0; i < AD_FIELDSETS.length; i++) {
+    AD_FIELDSETS[i].disabled = false;
+  }
+};
+
+// get pin address
+var getPinAddress = function (evt, width, height) {
+  var x = setPinOffsetX(evt.clientX, width);
+  var y = setPinOffsetY(evt.clientY, height);
+  return x + ', ' + y;
+};
+
+// set intput address value
+var setInputAddressValue = function (address) {
+  ADDRESS_INPUT.value = address;
+};
+
+var showOfferPopup = function (offer) {
+  var closePopup;
+  MAP.insertBefore(generateMapCard(offer), MAP_FILTER_CONTAINER);
+  closePopup = document.querySelector('.popup__close');
+  closePopup.addEventListener('click', onPopUpCloseClick);
+};
+
+var closeOfferPopup = function () {
+  var popup = document.querySelector('.popup');
+  if (popup) {
+    popup.remove();
+  }
+};
+
+// event handlers
+var onMainPinMouseUp = function (evt) {
+  var pinAddress = getPinAddress(evt, MAP_MAIN_PIN_WIDTH, MAP_MAIN_PIN_HEIGHT);
+  setInputAddressValue(pinAddress);
+  enableMap();
+  enableAdForm();
+  enableFormFieldsets();
+  MAP_PINS.appendChild(generatePins(offers));
+};
+
+var onPinClick = function (evt) {
+  var popupClose;
+  var searchClass = 'map__pin';
+  var target = evt.target;
+  var id = target.id ? target.id : target.parentElement.id;
+  var offer = id.charAt(id.length - 1);
+
+  if (
+    target.classList.contains(searchClass) ||
+    target.parentElement.classList.contains(searchClass)
+  ) {
+    if (offer) {
+      closeOfferPopup();
+      showOfferPopup(offers[offer]);
+    }
+  }
+};
+
+var onPopUpCloseClick = function () {
+  var offer = document.querySelector('.popup');
+  closeOfferPopup(offer);
+};
+
+MAP_PINS.addEventListener('click', onPinClick);
+MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
+
+disableFormFieldsets();
+var offers = generateRandomOffers();
