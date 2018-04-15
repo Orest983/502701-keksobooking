@@ -11,7 +11,18 @@ var MAP_MAIN_PIN = MAP.querySelector('.map__pin--main');
 
 var AD_FORM = document.querySelector('.ad-form');
 var AD_FIELDSETS = AD_FORM.querySelectorAll('fieldset');
-var ADDRESS_INPUT = AD_FORM.querySelector('#address');
+var INPUT_ADDRESS = AD_FORM.querySelector('#address');
+var SELECT_TIMEIN = AD_FORM.querySelector('#timein');
+var SELECT_TIMEOUT = AD_FORM.querySelector('#timeout');
+var SELECT_ROOMNUMBER = AD_FORM.querySelector('#room_number');
+var SELECT_CAPACITY = AD_FORM.querySelector('#capacity');
+var SELECT_TYPE = AD_FORM.querySelector('#type');
+var TEXTAREA_DESCRIPTION = AD_FORM.querySelector('#description');
+var INPUT_PRICE = AD_FORM.querySelector('#price');
+var INPUT_TITLE = AD_FORM.querySelector('#title');
+var BTN_FORM_SUBMIT = AD_FORM.querySelector('.ad-form__submit');
+var BTN_FORM_RESET = AD_FORM.querySelector('.ad-form__reset');
+var SUCCESS_POPUP = document.querySelector('.success');
 
 var MAP_PIN_WIDTH = 50;
 var MAP_PIN_HEIGHT = 70;
@@ -315,8 +326,6 @@ var enableFormFieldsets = function () {
   }
 };
 
-// get
-
 var getInitialPinAddress = function () {
   var x = parseInt(MAP_MAIN_PIN.style.left, 10);
   var y = parseInt(MAP_MAIN_PIN.style.top, 10);
@@ -332,7 +341,7 @@ var getPinAddress = function (mouseX, mouseY, width, height) {
 
 // set intput address value
 var setInputAddressValue = function (address) {
-  ADDRESS_INPUT.value = address;
+  INPUT_ADDRESS.value = address;
 };
 
 var showOfferPopup = function (offer) {
@@ -349,7 +358,142 @@ var closeOfferPopup = function () {
   }
 };
 
+var syncronizeCheckinCheckoutInput = function (evt) {
+  var val = evt.target.value;
+  SELECT_TIMEIN.querySelector('option[value="' + val + '"]').selected = true;
+  SELECT_TIMEOUT.querySelector('option[value="' + val + '"]').selected = true;
+};
+
+var showError = function (field) {
+  if (field.checkValidity() === false) {
+    field.reportValidity();
+  }
+};
+
+var getRoomnumber = function () {
+  return parseInt(SELECT_ROOMNUMBER.value, 10);
+};
+
+var toggleErrorClass = function (elem) {
+  if (elem.checkValidity() === false) {
+    setErrorClass(elem);
+  } else {
+    removeErrorClass(elem);
+  }
+};
+
+var setErrorClass = function (elem) {
+  elem.classList.add('error');
+};
+
+var removeErrorClass = function (elem) {
+  elem.classList.remove('error');
+};
+
+var setAppInitialState = function () {
+  var type;
+  var inputs = AD_FORM.querySelectorAll('input');
+  for (var i = 0; i < inputs.length; i++) {
+    type = inputs[i].type;
+    removeErrorClass(inputs[i]);
+    if (type === 'text' || type === 'file' || type === 'number') {
+      inputs[i].value = '';
+    } else if (type === 'checkbox') {
+      inputs[i].checked = false;
+    } else if (type === 'file') {
+      inputs[i].value = '';
+    }
+
+    INPUT_PRICE.value = '';
+    SELECT_TIMEIN.querySelector('option[value="12:00"]').selected = true;
+    SELECT_TIMEOUT.querySelector('option[value="12:00"]').selected = true;
+    SELECT_ROOMNUMBER.querySelector('option[value="1"]').selected = true;
+    SELECT_CAPACITY.querySelector('option[value="1"]').selected = true;
+    SELECT_TYPE.querySelector('option[value="flat"]').selected = true;
+    INPUT_ADDRESS.value = '570, 375';
+    TEXTAREA_DESCRIPTION.value = '';
+
+    disableFormFieldsets();
+    disableMap();
+    disableAdForm();
+    closeOfferPopup();
+    removePins();
+  }
+};
+
+var removePins = function () {
+  var pins = MAP.querySelectorAll('.map__pin');
+  for (var i = 0; i < pins.length; i++) {
+    var pin = pins[i];
+    if (pin.classList.contains('map__pin--main') === false) {
+      pin.remove();
+    }
+  }
+};
+
 // event handlers
+var onTitleInput = function () {
+  showError(INPUT_TITLE);
+};
+
+var onPriceInput = function () {
+  showError(INPUT_PRICE);
+};
+
+var onTitleBlur = function () {
+  toggleErrorClass(INPUT_TITLE);
+};
+
+var onPriceBlur = function () {
+  toggleErrorClass(INPUT_PRICE);
+};
+
+var onTypeChange = function (evt) {
+  var target = evt.target;
+  var val = evt.target.value;
+  var minPrice = target.querySelector('option[value="' + val + '"]').dataset
+      .min;
+  INPUT_PRICE.placeholder = minPrice;
+  INPUT_PRICE.min = minPrice;
+  showError(INPUT_PRICE);
+  toggleErrorClass(INPUT_PRICE);
+};
+
+var onCapacityChange = function () {
+  var roomNumber = getRoomnumber();
+  var capacity = parseInt(SELECT_CAPACITY.value, 10);
+
+  if (roomNumber === 1 && capacity !== 1) {
+    SELECT_CAPACITY.setCustomValidity('1 комната — «для 1 гостя»');
+  } else if (roomNumber === 2 && (capacity === 0 || capacity === 3)) {
+    SELECT_CAPACITY.setCustomValidity(
+        '2 комнаты — «для 2 гостей» или «для 1 гостя»'
+    );
+  } else if (roomNumber === 3 && capacity === 0) {
+    SELECT_CAPACITY.setCustomValidity(
+        '3 комнаты — «для 3 гостей», «для 2 гостей» или «для 1 гостя»'
+    );
+  } else if (roomNumber === 100 && capacity !== 0) {
+    SELECT_CAPACITY.setCustomValidity('100 комнат — «не для гостей»');
+  } else {
+    SELECT_CAPACITY.setCustomValidity('');
+  }
+  showError(SELECT_CAPACITY);
+};
+
+var onRoomnumberChange = function () {
+  showError(SELECT_CAPACITY);
+  onCapacityChange();
+};
+
+var onTimeinChange = function (evt) {
+  syncronizeCheckinCheckoutInput(evt);
+};
+
+var onTimeoutChange = function (evt) {
+  syncronizeCheckinCheckoutInput(evt);
+};
+
 var onMainPinMouseUp = function (evt) {
   var x = evt.clientX;
   var y = evt.clientY;
@@ -376,8 +520,38 @@ var onPopUpCloseClick = function () {
   closeOfferPopup(offer);
 };
 
+var onFormSubmitBtnClick = function (evt) {
+  evt.preventDefault();
+  if (AD_FORM.checkValidity() === false) {
+    var inputs = AD_FORM.querySelectorAll('input');
+    for (var i = 0; i < inputs.length; i++) {
+      toggleErrorClass(inputs[i]);
+    }
+  } else {
+    SUCCESS_POPUP.classList.remove('hidden');
+    setAppInitialState();
+  }
+};
+
+var onFormResetBtnClick = function (evt) {
+  evt.preventDefault();
+  setAppInitialState();
+};
+
+// event listeners
 MAP_PINS.addEventListener('click', onPinClick);
 MAP_MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
+SELECT_TIMEIN.addEventListener('change', onTimeinChange);
+SELECT_TIMEOUT.addEventListener('change', onTimeoutChange);
+SELECT_CAPACITY.addEventListener('change', onCapacityChange);
+SELECT_ROOMNUMBER.addEventListener('change', onRoomnumberChange);
+SELECT_TYPE.addEventListener('change', onTypeChange);
+INPUT_TITLE.addEventListener('input', onTitleInput);
+INPUT_PRICE.addEventListener('input', onPriceInput);
+INPUT_TITLE.addEventListener('blur', onTitleBlur);
+INPUT_PRICE.addEventListener('blur', onPriceBlur);
+BTN_FORM_SUBMIT.addEventListener('click', onFormSubmitBtnClick);
+BTN_FORM_RESET.addEventListener('click', onFormResetBtnClick);
 
 setInputAddressValue(getInitialPinAddress());
 disableFormFieldsets();
