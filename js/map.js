@@ -14,10 +14,9 @@ var AD_FIELDSETS = AD_FORM.querySelectorAll('fieldset');
 var INPUT_ADDRESS = AD_FORM.querySelector('#address');
 var SELECT_TIMEIN = AD_FORM.querySelector('#timein');
 var SELECT_TIMEOUT = AD_FORM.querySelector('#timeout');
-var SELECT_ROOMNUMBER = AD_FORM.querySelector('#room_number');
+var SELECT_ROOM_NUMBER = AD_FORM.querySelector('#room_number');
 var SELECT_CAPACITY = AD_FORM.querySelector('#capacity');
 var SELECT_TYPE = AD_FORM.querySelector('#type');
-var TEXTAREA_DESCRIPTION = AD_FORM.querySelector('#description');
 var INPUT_PRICE = AD_FORM.querySelector('#price');
 var INPUT_TITLE = AD_FORM.querySelector('#title');
 var BTN_FORM_SUBMIT = AD_FORM.querySelector('.ad-form__submit');
@@ -371,7 +370,7 @@ var showError = function (field) {
 };
 
 var getRoomNumber = function () {
-  return parseInt(SELECT_ROOMNUMBER.value, 10);
+  return parseInt(SELECT_ROOM_NUMBER.value, 10);
 };
 
 var toggleErrorClass = function (elem) {
@@ -396,10 +395,11 @@ var setAppInitialState = function () {
 
   disableMap();
   disableAdForm();
-  disableFormFieldsets();
   closeOfferPopup();
   removePins();
   setInputAddressValue(getInitialPinAddress());
+  // TODO: Refactor
+  setTimeout(disableFormFieldsets, 500);
 };
 
 var removePins = function () {
@@ -507,7 +507,7 @@ var onFormSubmitBtnClick = function (evt) {
     SUCCESS_POPUP.classList.remove('hidden');
     setAppInitialState();
   } else {
-    var inputs = AD_FORM.querySelectorAll('input');
+    var inputs = AD_FORM.querySelectorAll('input[type="text"]');
     for (var i = 0; i < inputs.length; i++) {
       toggleErrorClass(inputs[i]);
     }
@@ -524,7 +524,7 @@ MAP_MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
 SELECT_TIMEIN.addEventListener('change', onTimeinChange);
 SELECT_TIMEOUT.addEventListener('change', onTimeoutChange);
 SELECT_CAPACITY.addEventListener('change', onCapacityChange);
-SELECT_ROOMNUMBER.addEventListener('change', onRoomNumberChange);
+SELECT_ROOM_NUMBER.addEventListener('change', onRoomNumberChange);
 SELECT_TYPE.addEventListener('change', onTypeChange);
 INPUT_TITLE.addEventListener('input', onTitleInput);
 INPUT_PRICE.addEventListener('input', onPriceInput);
