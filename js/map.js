@@ -370,19 +370,15 @@ var showError = function (field) {
   }
 };
 
-var getRoomnumber = function () {
+var getRoomNumber = function () {
   return parseInt(SELECT_ROOMNUMBER.value, 10);
 };
 
 var toggleErrorClass = function (elem) {
-  if (elem.checkValidity() === false) {
-    setErrorClass(elem);
-  } else {
-    removeErrorClass(elem);
-  }
+  return elem.checkValidity() ? removeErrorClass(elem) : addErrorClass(elem);
 };
 
-var setErrorClass = function (elem) {
+var addErrorClass = function (elem) {
   elem.classList.add('error');
 };
 
@@ -391,34 +387,19 @@ var removeErrorClass = function (elem) {
 };
 
 var setAppInitialState = function () {
-  var type;
-  var inputs = AD_FORM.querySelectorAll('input');
-  for (var i = 0; i < inputs.length; i++) {
-    type = inputs[i].type;
-    removeErrorClass(inputs[i]);
-    if (type === 'text' || type === 'file' || type === 'number') {
-      inputs[i].value = '';
-    } else if (type === 'checkbox') {
-      inputs[i].checked = false;
-    } else if (type === 'file') {
-      inputs[i].value = '';
-    }
+  var textInputs = AD_FORM.querySelectorAll('input[type="text"]');
+  INPUT_PRICE.value = '';
 
-    INPUT_PRICE.value = '';
-    SELECT_TIMEIN.querySelector('option[value="12:00"]').selected = true;
-    SELECT_TIMEOUT.querySelector('option[value="12:00"]').selected = true;
-    SELECT_ROOMNUMBER.querySelector('option[value="1"]').selected = true;
-    SELECT_CAPACITY.querySelector('option[value="1"]').selected = true;
-    SELECT_TYPE.querySelector('option[value="flat"]').selected = true;
-    INPUT_ADDRESS.value = '570, 375';
-    TEXTAREA_DESCRIPTION.value = '';
-
-    disableFormFieldsets();
-    disableMap();
-    disableAdForm();
-    closeOfferPopup();
-    removePins();
+  for (var i = 0; i < textInputs.length; i++) {
+    removeErrorClass(textInputs[i]);
   }
+
+  disableMap();
+  disableAdForm();
+  disableFormFieldsets();
+  closeOfferPopup();
+  removePins();
+  setInputAddressValue(getInitialPinAddress());
 };
 
 var removePins = function () {
@@ -450,7 +431,7 @@ var onPriceBlur = function () {
 
 var onTypeChange = function (evt) {
   var target = evt.target;
-  var val = evt.target.value;
+  var val = target.value;
   var minPrice = target.querySelector('option[value="' + val + '"]').dataset
       .min;
   INPUT_PRICE.placeholder = minPrice;
@@ -460,7 +441,7 @@ var onTypeChange = function (evt) {
 };
 
 var onCapacityChange = function () {
-  var roomNumber = getRoomnumber();
+  var roomNumber = getRoomNumber();
   var capacity = parseInt(SELECT_CAPACITY.value, 10);
 
   if (roomNumber === 1 && capacity !== 1) {
@@ -481,7 +462,7 @@ var onCapacityChange = function () {
   showError(SELECT_CAPACITY);
 };
 
-var onRoomnumberChange = function () {
+var onRoomNumberChange = function () {
   showError(SELECT_CAPACITY);
   onCapacityChange();
 };
@@ -522,19 +503,18 @@ var onPopUpCloseClick = function () {
 
 var onFormSubmitBtnClick = function (evt) {
   evt.preventDefault();
-  if (AD_FORM.checkValidity() === false) {
+  if (AD_FORM.checkValidity()) {
+    SUCCESS_POPUP.classList.remove('hidden');
+    setAppInitialState();
+  } else {
     var inputs = AD_FORM.querySelectorAll('input');
     for (var i = 0; i < inputs.length; i++) {
       toggleErrorClass(inputs[i]);
     }
-  } else {
-    SUCCESS_POPUP.classList.remove('hidden');
-    setAppInitialState();
   }
 };
 
-var onFormResetBtnClick = function (evt) {
-  evt.preventDefault();
+var onFormResetBtnClick = function () {
   setAppInitialState();
 };
 
@@ -544,7 +524,7 @@ MAP_MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
 SELECT_TIMEIN.addEventListener('change', onTimeinChange);
 SELECT_TIMEOUT.addEventListener('change', onTimeoutChange);
 SELECT_CAPACITY.addEventListener('change', onCapacityChange);
-SELECT_ROOMNUMBER.addEventListener('change', onRoomnumberChange);
+SELECT_ROOMNUMBER.addEventListener('change', onRoomNumberChange);
 SELECT_TYPE.addEventListener('change', onTypeChange);
 INPUT_TITLE.addEventListener('input', onTitleInput);
 INPUT_PRICE.addEventListener('input', onPriceInput);
