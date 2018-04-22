@@ -29,10 +29,11 @@ var MAP_PIN_HEIGHT = 70;
 var MAP_MAIN_PIN_START_Y = 570;
 var MAP_MAIN_PIN_START_X = 375;
 
-var MAP_X_COORD_MIN = 100;
-var MAP_X_COORD_MAX = 1250;
+var MAP_X_COORD_MIN = MAP.offsetLeft + MAP_PIN_WIDTH / 2;
+var MAP_X_COORD_MAX = MAP.offsetWidth + MAP.offsetLeft - MAP_PIN_WIDTH / 2;
+
 var MAP_Y_COORD_MIN = 150;
-var MAP_Y_COORD_MAX = 650; // TODO: 500 ??
+var MAP_Y_COORD_MAX = 500;
 var RENT_LISTING_MAX_COUNT = 8; // TODO: change on 8
 
 var OFFER_TITLES = [
@@ -396,6 +397,7 @@ var setAppInitialState = function () {
   }
   setMainPinToInitialPosition();
   setInputAddressValue(getMainPinInitialAddress());
+
   disableMap();
   disableAdForm();
   closeOfferPopup();
@@ -501,7 +503,7 @@ var onPopUpCloseClick = function () {
   closeOfferPopup(offer);
 };
 
-var onFormSubmitBtnClick = function (evt) {
+var onFormSubmit = function (evt) {
   evt.preventDefault();
   if (AD_FORM.checkValidity()) {
     SUCCESS_POPUP.classList.remove('hidden');
@@ -514,9 +516,10 @@ var onFormSubmitBtnClick = function (evt) {
   }
 };
 
-var onFormResetBtnClick = function () {
+var onFormReset = function (evt) {
+  evt.preventDefault();
+  evt.currentTarget.reset();
   setAppInitialState();
-  INPUT_ADDRESS.value = '100000000000000';
 };
 
 var onMapManinPinMouseDown = function (evt) {
@@ -536,20 +539,20 @@ var onMapManinPinMouseDown = function (evt) {
     start.x = evtMove.clientX;
     start.y = evtMove.clientY;
 
-    if (start.x <= MAP_X_COORD_MIN || start.x >= MAP_X_COORD_MAX) {
-      shift.x = 0;
-    } else {
+    if (!(start.x <= MAP_X_COORD_MIN || start.x >= MAP_X_COORD_MAX)) {
       MAP_MAIN_PIN.style.left = MAP_MAIN_PIN.offsetLeft - shift.x + 'px';
     }
 
     if (
-      start.y + scrollY <= MAP_Y_COORD_MIN ||
-      start.y + scrollY >= MAP_Y_COORD_MAX
+      !(
+        start.y + scrollY <= MAP_Y_COORD_MIN ||
+        start.y + scrollY >= MAP_Y_COORD_MAX
+      )
     ) {
-      shift.y = 0;
-    } else {
       MAP_MAIN_PIN.style.top = MAP_MAIN_PIN.offsetTop - shift.y + 'px';
     }
+
+    setInputAddressValue(getMainPinInitialAddress());
   };
 
   var onDocumentMouseUp = function () {
@@ -561,10 +564,10 @@ var onMapManinPinMouseDown = function (evt) {
   document.addEventListener('mousemove', onDocumentMouseMove);
 };
 
-MAP_MAIN_PIN.addEventListener('mousedown', onMapManinPinMouseDown);
 // event listeners
 MAP_PINS.addEventListener('click', onPinClick);
 MAP_MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
+MAP_MAIN_PIN.addEventListener('mousedown', onMapManinPinMouseDown);
 SELECT_TIMEIN.addEventListener('change', onTimeinChange);
 SELECT_TIMEOUT.addEventListener('change', onTimeoutChange);
 SELECT_CAPACITY.addEventListener('change', onCapacityChange);
@@ -575,8 +578,8 @@ INPUT_PRICE.addEventListener('input', onPriceInput);
 INPUT_TITLE.addEventListener('blur', onTitleBlur);
 INPUT_PRICE.addEventListener('blur', onPriceBlur);
 
-BTN_FORM_SUBMIT.addEventListener('click', onFormSubmitBtnClick);
-BTN_FORM_RESET.addEventListener('click', onFormResetBtnClick);
+AD_FORM.addEventListener('reset', onFormReset);
+AD_FORM.addEventListener('submit', onFormSubmit);
 
 setInputAddressValue(getMainPinInitialAddress());
 disableFormFieldsets();
