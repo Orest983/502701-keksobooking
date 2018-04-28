@@ -6,6 +6,8 @@
   var MAP_MAIN_PIN_START_Y = 570;
   var MAP_MAIN_PIN_START_X = 375;
 
+  var offers;
+
   var getMainPinInitialAddress = function () {
     var x = Math.round(MAP_MAIN_PIN.offsetLeft + MAP_MAIN_PIN.offsetWidth / 2);
     var y = Math.round(MAP_MAIN_PIN.offsetTop + MAP_MAIN_PIN.offsetHeight / 2);
@@ -105,7 +107,14 @@
     window.map.enableMap();
     window.form.enableAdForm();
     window.form.enableFormFieldsets();
-    MAP_PINS.appendChild(generatePins(window.data.offers));
+
+    var onLoad = function (data) {
+      var dataOffers = JSON.parse(data);
+      offers = window.data.generateOffers(dataOffers);
+      var pins = generatePins(offers);
+      MAP_PINS.appendChild(pins);
+    };
+    window.backend.getData(onLoad, window.popupError.showErrorPopUp);
   };
   var onPinClick = function (evt) {
     var offer;
@@ -113,7 +122,7 @@
     if (target && !target.classList.contains('map__pin--main')) {
       offer = target.dataset['offerId'];
       window.offerCard.closeOfferPopup();
-      window.offerCard.showOfferPopup(window.data.offers[offer]);
+      window.offerCard.showOfferPopup(offers[offer]);
     }
   };
 

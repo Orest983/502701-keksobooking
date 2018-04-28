@@ -9,8 +9,6 @@
   var MAP_Y_COORD_MIN = 150;
   var MAP_Y_COORD_MAX = 500;
 
-  console.log(MAP_X_COORD_MIN);
-
   var disableMap = function () {
     MAP.classList.add('map--faded');
   };
