@@ -233,6 +233,10 @@
     <div class="success hidden">
       <p class="success__message">Ваше объявление<br>успешно размещено!</p>
     </div>
+    <div class="error-popup hidden">
+      <button class="error-popup__close" type="button" name="button">x</button>
+      <p class="error-popup__message">Ошибка</p>
+    </div>
   </main>
 
   <footer class="footer container">
@@ -286,6 +290,8 @@
     <button type="button" class="map__pin" style="left: 200px; top: 400px;"><img src="img/avatars/user07.png" width="40" height="40" draggable="false" alt="Метка объявления"></button>
   </template>
   <script src="js/util.js"></script>
+  <script src="js/popup-error.js"></script>
+  <script src="js/backend.js"></script>
   <script src="js/map.js"></script>
   <script src="js/data.js"></script>
   <script src="js/offer-card.js"></script>

@@ -1212,3 +1212,29 @@ fieldset {
 .ad-form__element input.error {
   border: 1px solid red;
 }
+
+.error-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 150px;
+  background: white;
+  border: 2px solid red;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  text-align: center;
+}
+
+.error-popup__message {
+  padding-top: 50px;
+}
+
+.error-popup__close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: none;
+  border: 1px solid grey;
+  border-radius: 50%;
+}

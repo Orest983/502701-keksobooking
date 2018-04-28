@@ -126,10 +126,38 @@
         window.util.getRandomMinMax(0, OFFER_FEATURES.length - 1)
     );
   };
+  var generateOffers = function (data) {
+    var ad;
+    var ads = [];
+    for (var i = 0; i < RENT_LISTING_MAX_COUNT; i++) {
+      ad = {};
+      ad['author'] = {
+        avatar: data[i].author.avatar
+      };
+      ad['offer'] = {
+        title: data[i].offer.title,
+        address: data[i].offer.address,
+        price: data[i].offer.price,
+        type: data[i].offer.type,
+        rooms: data[i].offer.rooms,
+        guests: data[i].offer.guests,
+        checkin: data[i].offer.checkin,
+        checkout: data[i].offer.checkout,
+        features: data[i].offer.features,
+        description: data[i].offer.description,
+        photos: data[i].offer.photos
+      };
+      ad['location'] = {
+        x: data[i].location.x,
+        y: data[i].location.y
+      };
+      ads[i] = ad;
+    }
+    return ads;
+  };
 
-  var offers = generateRandomOffers();
   return (window.data = {
     OFFER_TYPES: OFFER_TYPES,
-    offers: offers
+    generateOffers: generateOffers
   });
 })();

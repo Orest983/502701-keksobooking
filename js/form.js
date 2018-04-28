@@ -20,14 +20,11 @@
       removeErrorClass(textInputs[i]);
     }
     window.pins.setMainPinToInitialPosition();
-    setInputAddressValue(window.pins.getMainPinInitialAddress());
-
     disableAdForm();
     window.offerCard.closeOfferPopup();
     window.pins.removePins();
     window.map.disableMap();
-    // TODO: Refactor
-    setTimeout(window.form.disableFormFieldsets, 500);
+    window.form.disableFormFieldsets();
   };
 
   var disableAdForm = function () {
@@ -47,6 +44,9 @@
     }
   };
   var setInputAddressValue = function (address) {
+    if (INPUT_ADDRESS.value === '') {
+      INPUT_ADDRESS.defaultValue = address;
+    }
     INPUT_ADDRESS.value = address;
   };
   var syncronizeCheckinCheckoutInput = function (evt) {
@@ -70,6 +70,18 @@
   };
   var getRoomNumber = function () {
     return parseInt(SELECT_ROOM_NUMBER.value, 10);
+  };
+  var getFormData = function () {
+    INPUT_ADDRESS.disabled = 0;
+    return new FormData(AD_FORM);
+  };
+  var showSuccessPopUp = function () {
+    SUCCESS_POPUP.classList.remove('hidden');
+  };
+
+  var formSuccessUpload = function () {
+    setAppInitialState();
+    showSuccessPopUp();
   };
 
   // form.js event handlers
@@ -127,20 +139,21 @@
     syncronizeCheckinCheckoutInput(evt);
   };
   var onFormSubmit = function (evt) {
-    evt.preventDefault();
     if (AD_FORM.checkValidity()) {
-      SUCCESS_POPUP.classList.remove('hidden');
-      setAppInitialState();
+      window.backend.sendData(
+          getFormData(),
+          formSuccessUpload,
+          window.popupError.showErrorPopUp
+      );
     } else {
       var inputs = AD_FORM.querySelectorAll('input[type="text"]');
       for (var i = 0; i < inputs.length; i++) {
         toggleErrorClass(inputs[i]);
       }
     }
-  };
-  var onFormReset = function (evt) {
     evt.preventDefault();
-    evt.currentTarget.reset();
+  };
+  var onFormReset = function () {
     setAppInitialState();
   };
 
