@@ -72,7 +72,7 @@
     return parseInt(SELECT_ROOM_NUMBER.value, 10);
   };
   var getFormData = function () {
-    INPUT_ADDRESS.disabled = 0;
+    INPUT_ADDRESS.disabled = false;
     return new FormData(AD_FORM);
   };
   var showSuccessPopUp = function () {
@@ -139,6 +139,7 @@
     syncronizeCheckinCheckoutInput(evt);
   };
   var onFormSubmit = function (evt) {
+    evt.preventDefault();
     if (AD_FORM.checkValidity()) {
       window.backend.sendData(
           getFormData(),
@@ -151,7 +152,6 @@
         toggleErrorClass(inputs[i]);
       }
     }
-    evt.preventDefault();
   };
   var onFormReset = function () {
     setAppInitialState();

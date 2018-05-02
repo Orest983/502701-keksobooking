@@ -109,10 +109,12 @@
     window.form.enableFormFieldsets();
 
     var onLoad = function (data) {
-      var dataOffers = JSON.parse(data);
-      offers = window.data.generateOffers(dataOffers);
-      var pins = generatePins(offers);
-      MAP_PINS.appendChild(pins);
+      if (!offers) {
+        offers = window.data.generateOffers(JSON.parse(data));
+        var pins = generatePins(offers);
+        MAP_PINS.appendChild(pins);
+      }
+      window.filter.enableFilter();
     };
     window.backend.getData(onLoad, window.popupError.showErrorPopUp);
   };
@@ -130,7 +132,9 @@
   MAP_PINS.addEventListener('click', onPinClick);
   MAP_MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
   MAP_MAIN_PIN.addEventListener('mousedown', onMapManinPinMouseDown);
+
   return (window.pins = {
+    MAP_PINS: MAP_PINS,
     getMainPinInitialAddress: getMainPinInitialAddress,
     getMainPinRealAddress: getMainPinRealAddress,
     setMainPinToInitialPosition: setMainPinToInitialPosition,

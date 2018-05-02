@@ -46,7 +46,7 @@
   ];
   var OFFER_MIN_PRICE = 1000;
   var OFFER_MAX_PRICE = 1000000;
-  var RENT_LISTING_MAX_COUNT = 8;
+  var RENT_LISTING_MAX_COUNT = 5;
 
   var getOfferTypeByOfferTitle = function (title) {
     var searchResult = 'Type is undefined';
@@ -158,6 +158,7 @@
 
   return (window.data = {
     OFFER_TYPES: OFFER_TYPES,
-    generateOffers: generateOffers
+    generateOffers: generateOffers,
+    generateRandomOffers: generateRandomOffers
   });
 })();

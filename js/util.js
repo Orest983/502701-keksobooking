@@ -19,8 +19,16 @@
     return arr;
   };
 
+  var lastTimeout;
+  var debounce = function (func, timeout) {
+    if (lastTimeout) {
+      clearTimeout(lastTimeout);
+    }
+    lastTimeout = setTimeout(func, timeout);
+  };
   window.util = {
     getRandomMinMax: getRandomMinMax,
-    shuffleArray: shuffleArray
+    shuffleArray: shuffleArray,
+    debounce: debounce
   };
 })();
