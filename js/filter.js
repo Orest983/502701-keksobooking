@@ -9,7 +9,7 @@
     noResult: 'Совпадений не найдено, смягчите условия поиска!'
   };
 
-  var filterValue = {
+  var filterCriteria = {
     type: 'any',
     rooms: 'any',
     guests: 'any',
@@ -29,7 +29,7 @@
   };
 
   var onLoad = function (data) {
-    var offers = filterOffers(JSON.parse(data));
+    var offers = filterOffers(data);
     var pins = window.pins.generatePins(offers);
     window.offerCard.closeOfferPopup();
     window.pins.removePins();
@@ -41,16 +41,16 @@
 
   var filterFeatures = function (data) {
     var res = data;
-    if (filterValue.features.length) {
+    if (filterCriteria.features.length) {
       res = data.filter(function (it) {
         var index;
-        for (var i = 0; i < filterValue.features.length; i++) {
-          index = it.offer.features.indexOf(filterValue.features[i]);
+        for (var i = 0; i < filterCriteria.features.length; i++) {
+          index = it.offer.features.indexOf(filterCriteria.features[i]);
           if (index === -1) {
             break;
           }
         }
-        return index === -1 ? false : true;
+        return index !== -1;
       });
     }
     return res;
@@ -59,27 +59,27 @@
     var res = data;
     var filters = ['type', 'rooms', 'guests'];
     filters.forEach(function (filter) {
-      if (filterValue[filter] !== 'any') {
+      if (filterCriteria[filter] !== 'any') {
         res = data.filter(function (it) {
-          return it.offer[filter] === filterValue[filter];
+          return it.offer[filter] === filterCriteria[filter];
         });
       }
     });
     return res;
   };
   var filterPrice = function (data) {
-    var price = {
+    var Price = {
       low: 10000,
       high: 50000
     };
     return data.filter(function (elem) {
-      switch (filterValue.price) {
+      switch (filterCriteria.price) {
         case 'low':
-          return elem.offer.price < price.low;
+          return elem.offer.price <= Price.low;
         case 'middle':
-          return elem.offer.price > price.low && elem.offer.price < price.high;
+          return elem.offer.price > Price.low && elem.offer.price < Price.high;
         case 'high':
-          return elem.offer.price >= price.high;
+          return elem.offer.price >= Price.high;
         default:
           return true;
       }
@@ -87,36 +87,36 @@
   };
 
   var filterOffers = function (data) {
-    var res = data;
-    res = filterSelect(res);
+    var res;
+    res = filterSelect(data);
     res = filterPrice(res);
     res = filterFeatures(res);
     res = res.slice(0, FILTER_MAX_RESULT);
     return res;
   };
 
-  var setFilterValue = function (evt) {
+  var setfilterCriteria = function (evt) {
     var target = evt.target;
     var key = target.id.split(/-/)[1];
+    var features = filterCriteria.features;
 
     if (target.tagName === 'SELECT') {
-      filterValue[key] = isNaN(parseInt(target.value, 10))
+      filterCriteria[key] = Number.isNaN(parseInt(target.value, 10))
         ? target.value
         : parseInt(target.value, 10);
     } else {
       if (target.checked) {
-        filterValue.features.push(key);
+        features.push(key);
       } else {
-        filterValue.features.splice(filterValue.features.indexOf(key), 1);
+        features.splice(features.indexOf(key), 1);
       }
     }
   };
 
   var onFilterChange = function (evt) {
-    var filterChangeEvt = evt;
     return window.util.debounce(function () {
-      setFilterValue(filterChangeEvt);
-      window.backend.getData(onLoad, window.popupError.showErrorPopUp);
+      setfilterCriteria(evt);
+      onLoad(window.offers);
     }, FILTER_TIMEOUT);
   };
 

@@ -5,8 +5,9 @@
   var MAP_MAIN_PIN = document.querySelector('.map__pin--main');
   var MAP_MAIN_PIN_START_Y = 570;
   var MAP_MAIN_PIN_START_X = 375;
+  var MAX_PINS_COUNT = 5;
 
-  var offers;
+  // var offers;
 
   var getMainPinInitialAddress = function () {
     var x = Math.round(MAP_MAIN_PIN.offsetLeft + MAP_MAIN_PIN.offsetWidth / 2);
@@ -32,8 +33,11 @@
     var pinTemplate = MAP_PIN;
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < ads.length; i++) {
+      if (i === MAX_PINS_COUNT) {
+        break;
+      }
       var pin = pinTemplate.cloneNode(true);
-      pin.dataset['offerId'] = i;
+      pin.dataset['offerId'] = ads[i].id;
       pin.style.left =
         setPinOffsetX(ads[i].location.x, window.map.MAP_PIN_WIDTH) + 'px';
       pin.style.top =
@@ -109,9 +113,9 @@
     window.form.enableFormFieldsets();
 
     var onLoad = function (data) {
-      if (!offers) {
-        offers = window.data.generateOffers(JSON.parse(data));
-        var pins = generatePins(offers);
+      if (!window.offers) {
+        window.offers = window.data.generateOffers(JSON.parse(data));
+        var pins = generatePins(window.offers);
         MAP_PINS.appendChild(pins);
       }
       window.filter.enableFilter();
@@ -124,7 +128,7 @@
     if (target && !target.classList.contains('map__pin--main')) {
       offer = target.dataset['offerId'];
       window.offerCard.closeOfferPopup();
-      window.offerCard.showOfferPopup(offers[offer]);
+      window.offerCard.showOfferPopup(window.offers[offer]);
     }
   };
 

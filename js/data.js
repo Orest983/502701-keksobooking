@@ -129,8 +129,9 @@
   var generateOffers = function (data) {
     var ad;
     var ads = [];
-    for (var i = 0; i < RENT_LISTING_MAX_COUNT; i++) {
+    for (var i = 0; i < data.length; i++) {
       ad = {};
+      ad['id'] = i;
       ad['author'] = {
         avatar: data[i].author.avatar
       };
