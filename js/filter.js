@@ -95,7 +95,7 @@
     return res;
   };
 
-  var setfilterCriteria = function (evt) {
+  var setFilterCriteria = function (evt) {
     var target = evt.target;
     var key = target.id.split(/-/)[1];
     var features = filterCriteria.features;
@@ -115,7 +115,7 @@
 
   var onFilterChange = function (evt) {
     return window.util.debounce(function () {
-      setfilterCriteria(evt);
+      setFilterCriteria(evt);
       applyFilter(window.offers);
     }, FILTER_TIMEOUT);
   };
