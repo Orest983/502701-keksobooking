@@ -28,7 +28,7 @@
     }
   };
 
-  var onLoad = function (data) {
+  var applyFilter = function (data) {
     var offers = filterOffers(data);
     var pins = window.pins.generatePins(offers);
     window.offerCard.closeOfferPopup();
@@ -60,7 +60,7 @@
     var filters = ['type', 'rooms', 'guests'];
     filters.forEach(function (filter) {
       if (filterCriteria[filter] !== 'any') {
-        res = data.filter(function (it) {
+        res = res.filter(function (it) {
           return it.offer[filter] === filterCriteria[filter];
         });
       }
@@ -116,7 +116,7 @@
   var onFilterChange = function (evt) {
     return window.util.debounce(function () {
       setfilterCriteria(evt);
-      onLoad(window.offers);
+      applyFilter(window.offers);
     }, FILTER_TIMEOUT);
   };
 
