@@ -37,9 +37,9 @@
     return 'гост' + wordEnding;
   };
 
-  var generateFeaturesList = function (arrFeatures) {
+  var generateFeaturesList = function (features) {
     var fragment = document.createDocumentFragment();
-    arrFeatures.forEach(function (feature) {
+    features.forEach(function (feature) {
       var item = MAP_POPUP_FEATURE.cloneNode(true);
       item.classList.add('popup__feature--' + feature);
       fragment.appendChild(item);
@@ -47,9 +47,9 @@
     return fragment;
   };
 
-  var generatePopupPhotos = function (arrPhotos) {
+  var generatePopupPhotos = function (photos) {
     var fragment = document.createDocumentFragment();
-    arrPhotos.forEach(function (photo, i) {
+    photos.forEach(function (photo, i) {
       var item = MAP_POPUP_PHOTO.cloneNode(true);
       item.src = photo;
       item.alt = 'фото ' + i;
@@ -91,20 +91,25 @@
         .appendChild(generatePopupPhotos(ad.offer.photos));
     mapCard.querySelector('.popup__avatar').src = ad.author.avatar;
 
+    mapCard
+        .querySelector('.popup__close')
+        .addEventListener('click', onPopUpCloseClick);
+
+    document.addEventListener('keydown', onDocumentEscKeydown);
+
     return mapCard;
   };
 
   var showOfferPopup = function (offer) {
-    window.map.MAP.insertBefore(generateMapCard(offer), MAP_FILTER_CONTAINER);
-    var closePopup = document.querySelector('.popup__close');
-    closePopup.addEventListener('click', onPopUpCloseClick);
-    document.addEventListener('keydown', onDocumentEscKeydown);
+    window.popup = window.map.MAP.insertBefore(
+        generateMapCard(offer),
+        MAP_FILTER_CONTAINER
+    );
   };
 
   var closeOfferPopup = function () {
-    var popup = document.querySelector('.popup');
-    if (popup) {
-      popup.remove();
+    if (window.popup) {
+      window.popup.remove();
       document.removeEventListener('keydown', onDocumentEscKeydown);
     }
   };

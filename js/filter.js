@@ -27,7 +27,7 @@
       FILTER.elements[i].disabled = true;
     }
     FILTER.removeEventListener('change', onFilterChange);
-    FILTER.removeEventListener('keydown', onFilterCheckboxEnterKeyDown);
+    FILTER.removeEventListener('keydown', onFilterChange);
   };
 
   var enableFilter = function () {
@@ -35,7 +35,7 @@
       FILTER.elements[i].disabled = false;
     }
     FILTER.addEventListener('change', onFilterChange);
-    FILTER.addEventListener('keydown', onFilterCheckboxEnterKeyDown);
+    FILTER.addEventListener('keydown', onFilterChange);
   };
 
   var applyFilter = function (offers) {
@@ -112,23 +112,14 @@
   };
 
   var onFilterChange = function (evt) {
+    var target = evt.target;
     return window.util.debounce(function () {
-      setFilterCriteria(evt.target);
+      if (target.classList.contains('map__checkbox') && evt.code === 'Enter') {
+        target.checked = !target.checked;
+      }
+      setFilterCriteria(target);
       applyFilter(window.offers);
     }, FILTER_TIMEOUT);
-  };
-
-  var onFilterCheckboxEnterKeyDown = function (evt) {
-    var target = evt.target;
-    if (target.classList.contains('map__checkbox') === false) {
-      return false;
-    }
-    if (evt.code !== 'Enter') {
-      return false;
-    }
-    onFilterChange(evt);
-    target.checked = target.checked ? false : true;
-    return false;
   };
 
   return (window.filter = {

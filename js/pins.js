@@ -120,9 +120,10 @@
     var onLoad = function (data) {
       if (!window.offers) {
         window.offers = window.data.generateOffers(JSON.parse(data));
-        var pins = generatePins(window.offers);
-        MAP_PINS.appendChild(pins);
       }
+
+      var pins = generatePins(window.offers);
+      MAP_PINS.appendChild(pins);
       window.filter.enableFilter();
     };
     window.backend.getData(onLoad, window.popupError.showErrorPopUp);
@@ -132,7 +133,6 @@
     var target = evt.target.closest('.map__pin');
     if (target && !target.classList.contains('map__pin--main')) {
       var offer = target.dataset['offerId'];
-      window.offerCard.closeOfferPopup();
       window.offerCard.showOfferPopup(window.offers[offer]);
     }
   };
