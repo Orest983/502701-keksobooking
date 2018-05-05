@@ -10,14 +10,12 @@
   var SELECT_TYPE = AD_FORM.querySelector('#type');
   var INPUT_PRICE = AD_FORM.querySelector('#price');
   var INPUT_TITLE = AD_FORM.querySelector('#title');
+  var TEXT_INPUTS = AD_FORM.querySelectorAll('input');
   var SUCCESS_POPUP = document.querySelector('.success');
 
-  // form js functions
   var setAppInitialState = function () {
-    var textInputs = AD_FORM.querySelectorAll('input');
-
-    for (var i = 0; i < textInputs.length; i++) {
-      removeErrorClass(textInputs[i]);
+    for (var i = 0; i < TEXT_INPUTS.length; i++) {
+      removeErrorClass(TEXT_INPUTS[i]);
     }
     window.pins.setMainPinToInitialPosition();
     disableAdForm();
@@ -30,51 +28,63 @@
   var disableAdForm = function () {
     AD_FORM.classList.add('ad-form--disabled');
   };
+
   var enableAdForm = function () {
     AD_FORM.classList.remove('ad-form--disabled');
   };
+
   var disableFormFieldsets = function () {
     for (var i = 0; i < AD_FIELDSETS.length; i++) {
       AD_FIELDSETS[i].disabled = true;
     }
   };
+
   var enableFormFieldsets = function () {
     for (var i = 0; i < AD_FIELDSETS.length; i++) {
       AD_FIELDSETS[i].disabled = false;
     }
   };
+
   var setInputAddressValue = function (address) {
     if (INPUT_ADDRESS.value === '') {
       INPUT_ADDRESS.defaultValue = address;
     }
     INPUT_ADDRESS.value = address;
   };
+
   var syncronizeCheckinCheckoutInput = function (evt) {
     var val = evt.target.value;
     SELECT_TIMEIN.querySelector('option[value="' + val + '"]').selected = true;
     SELECT_TIMEOUT.querySelector('option[value="' + val + '"]').selected = true;
   };
+
   var showError = function (field) {
     if (field.checkValidity() === false) {
       field.reportValidity();
     }
   };
+
   var toggleErrorClass = function (elem) {
     return elem.checkValidity() ? removeErrorClass(elem) : addErrorClass(elem);
   };
+
   var addErrorClass = function (elem) {
     elem.classList.add('error');
   };
+
   var removeErrorClass = function (elem) {
     elem.classList.remove('error');
   };
+
   var getRoomNumber = function () {
     return parseInt(SELECT_ROOM_NUMBER.value, 10);
   };
+
   var getFormData = function () {
     INPUT_ADDRESS.disabled = false;
     return new FormData(AD_FORM);
   };
+
   var showSuccessPopUp = function () {
     SUCCESS_POPUP.classList.remove('hidden');
   };
@@ -84,29 +94,32 @@
     showSuccessPopUp();
   };
 
-  // form.js event handlers
   var onTitleInput = function () {
     showError(INPUT_TITLE);
   };
+
   var onPriceInput = function () {
     showError(INPUT_PRICE);
   };
+
   var onTitleBlur = function () {
     toggleErrorClass(INPUT_TITLE);
   };
+
   var onPriceBlur = function () {
     toggleErrorClass(INPUT_PRICE);
   };
+
   var onTypeChange = function (evt) {
     var target = evt.target;
-    var val = target.value;
-    var minPrice = target.querySelector('option[value="' + val + '"]').dataset
-        .min;
+    var minPrice = target.querySelector('option[value="' + target.value + '"]')
+        .dataset.min;
     INPUT_PRICE.placeholder = minPrice;
     INPUT_PRICE.min = minPrice;
     showError(INPUT_PRICE);
     toggleErrorClass(INPUT_PRICE);
   };
+
   var onCapacityChange = function () {
     var roomNumber = getRoomNumber();
     var capacity = parseInt(SELECT_CAPACITY.value, 10);
@@ -126,22 +139,27 @@
     } else {
       SELECT_CAPACITY.setCustomValidity('');
     }
+
     showError(SELECT_CAPACITY);
   };
+
   var onRoomNumberChange = function () {
     showError(SELECT_CAPACITY);
     onCapacityChange();
   };
+
   var onTimeinChange = function (evt) {
     syncronizeCheckinCheckoutInput(evt);
   };
+
   var onTimeoutChange = function (evt) {
     syncronizeCheckinCheckoutInput(evt);
   };
+
   var onFormSubmit = function (evt) {
     evt.preventDefault();
     if (AD_FORM.checkValidity()) {
-      window.backend.sendData(
+      window.backend.postData(
           getFormData(),
           formSuccessUpload,
           window.popupError.showErrorPopUp
@@ -153,19 +171,19 @@
       }
     }
   };
+
   var onFormReset = function () {
     setAppInitialState();
   };
 
-  // form.js event listeners
   SELECT_TIMEIN.addEventListener('change', onTimeinChange);
   SELECT_TIMEOUT.addEventListener('change', onTimeoutChange);
   SELECT_CAPACITY.addEventListener('change', onCapacityChange);
   SELECT_ROOM_NUMBER.addEventListener('change', onRoomNumberChange);
   SELECT_TYPE.addEventListener('change', onTypeChange);
   INPUT_TITLE.addEventListener('input', onTitleInput);
-  INPUT_PRICE.addEventListener('input', onPriceInput);
   INPUT_TITLE.addEventListener('blur', onTitleBlur);
+  INPUT_PRICE.addEventListener('input', onPriceInput);
   INPUT_PRICE.addEventListener('blur', onPriceBlur);
   AD_FORM.addEventListener('reset', onFormReset);
   AD_FORM.addEventListener('submit', onFormSubmit);

@@ -16,6 +16,11 @@
       'Превышено время ожидания ответа сервера, \n\r повторите запрос позднее'
   };
 
+  var Url = {
+    get: 'https://js.dump.academy/keksobooking/data',
+    post: 'https://js.dump.academy/keksobooking'
+  };
+
   var REQUEST_TIMEOUT = 2000;
 
   var load = function (url, type, data, onLoad, onError) {
@@ -41,7 +46,6 @@
         default:
           error = 'Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText;
       }
-
       if (error) {
         onError(error);
       }
@@ -57,18 +61,15 @@
   };
 
   var getData = function (onLoad, onError) {
-    var url = 'https://js.dump.academy/keksobooking/data';
-    var data = '';
-    load(url, 'GET', data, onLoad, onError);
+    load(Url.get, 'GET', null, onLoad, onError);
   };
 
-  var sendData = function (data, onLoad, onError) {
-    var url = 'https://js.dump.academy/keksobooking';
-    load(url, 'POST', data, onLoad, onError);
+  var postData = function (data, onLoad, onError) {
+    load(Url.post, 'POST', data, onLoad, onError);
   };
 
   return (window.backend = {
     getData: getData,
-    sendData: sendData
+    postData: postData
   });
 })();

@@ -1,12 +1,17 @@
 'use strict';
 (function () {
   var FILTER = document.querySelector('.map__filters');
-  var SELECT = FILTER.querySelectorAll('select');
-  var CHECKBOX = FILTER.querySelectorAll('input[type="checkbox"]');
   var FILTER_TIMEOUT = 500;
   var FILTER_MAX_RESULT = 5;
   var Message = {
     noResult: 'Совпадений не найдено, смягчите условия поиска!'
+  };
+
+  var FilterSelect = ['type', 'rooms', 'guests'];
+
+  var Price = {
+    low: 10000,
+    high: 50000
   };
 
   var filterCriteria = {
@@ -21,58 +26,54 @@
     for (var i = 0; i < FILTER.elements.length; i++) {
       FILTER.elements[i].disabled = true;
     }
+    FILTER.removeEventListener('change', onFilterChange);
+    FILTER.removeEventListener('keydown', onFilterCheckboxEnterKeyDown);
   };
+
   var enableFilter = function () {
     for (var i = 0; i < FILTER.elements.length; i++) {
       FILTER.elements[i].disabled = false;
     }
+    FILTER.addEventListener('change', onFilterChange);
+    FILTER.addEventListener('keydown', onFilterCheckboxEnterKeyDown);
   };
 
-  var applyFilter = function (data) {
-    var offers = filterOffers(data);
-    var pins = window.pins.generatePins(offers);
+  var applyFilter = function (offers) {
+    var filtredOffers = filterOffers(offers);
     window.offerCard.closeOfferPopup();
     window.pins.removePins();
-    window.pins.MAP_PINS.appendChild(pins);
-    if (!offers.length) {
+    if (filtredOffers.length === 0) {
       window.popupError.showErrorPopUp(Message.noResult);
+    } else {
+      var pins = window.pins.generatePins(filtredOffers);
+      window.pins.MAP_PINS.appendChild(pins);
     }
   };
 
-  var filterFeatures = function (data) {
-    var res = data;
-    if (filterCriteria.features.length) {
-      res = data.filter(function (it) {
-        var index;
-        for (var i = 0; i < filterCriteria.features.length; i++) {
-          index = it.offer.features.indexOf(filterCriteria.features[i]);
-          if (index === -1) {
-            break;
-          }
-        }
-        return index !== -1;
-      });
+  var filterFeatures = function (offers) {
+    if (filterCriteria.features.length === 0) {
+      return offers;
     }
-    return res;
-  };
-  var filterSelect = function (data) {
-    var res = data;
-    var filters = ['type', 'rooms', 'guests'];
-    filters.forEach(function (filter) {
-      if (filterCriteria[filter] !== 'any') {
-        res = res.filter(function (it) {
-          return it.offer[filter] === filterCriteria[filter];
-        });
-      }
+
+    return offers.filter(function (offerItem) {
+      return filterCriteria.features.every(function (feature) {
+        return offerItem.offer.features.indexOf(feature) !== -1;
+      });
     });
-    return res;
   };
-  var filterPrice = function (data) {
-    var Price = {
-      low: 10000,
-      high: 50000
-    };
-    return data.filter(function (elem) {
+
+  var filterSelect = function (offers) {
+    return FilterSelect.reduce(function (acc, currentFilter) {
+      return filterCriteria[currentFilter] === 'any'
+        ? acc
+        : acc.filter(function (it) {
+          return it.offer[currentFilter] === filterCriteria[currentFilter];
+        });
+    }, offers);
+  };
+
+  var filterPrice = function (offers) {
+    return offers.filter(function (elem) {
       switch (filterCriteria.price) {
         case 'low':
           return elem.offer.price <= Price.low;
@@ -86,26 +87,23 @@
     });
   };
 
-  var filterOffers = function (data) {
-    var res;
-    res = filterSelect(data);
+  var filterOffers = function (offers) {
+    var res = filterSelect(offers);
     res = filterPrice(res);
     res = filterFeatures(res);
-    res = res.slice(0, FILTER_MAX_RESULT);
-    return res;
+    return res.slice(0, FILTER_MAX_RESULT);
   };
 
-  var setFilterCriteria = function (evt) {
-    var target = evt.target;
-    var key = target.id.split(/-/)[1];
+  var setFilterCriteria = function (targetNode) {
+    var key = targetNode.id.split(/-/)[1];
     var features = filterCriteria.features;
 
-    if (target.tagName === 'SELECT') {
-      filterCriteria[key] = Number.isNaN(parseInt(target.value, 10))
-        ? target.value
-        : parseInt(target.value, 10);
+    if (targetNode.tagName === 'SELECT') {
+      filterCriteria[key] = Number.isNaN(parseInt(targetNode.value, 10))
+        ? targetNode.value
+        : parseInt(targetNode.value, 10);
     } else {
-      if (target.checked) {
+      if (targetNode.checked) {
         features.push(key);
       } else {
         features.splice(features.indexOf(key), 1);
@@ -115,18 +113,23 @@
 
   var onFilterChange = function (evt) {
     return window.util.debounce(function () {
-      setFilterCriteria(evt);
+      setFilterCriteria(evt.target);
       applyFilter(window.offers);
     }, FILTER_TIMEOUT);
   };
 
-  for (var i = 0; i < SELECT.length; i++) {
-    SELECT[i].addEventListener('change', onFilterChange);
-  }
-
-  for (var j = 0; j < CHECKBOX.length; j++) {
-    CHECKBOX[j].addEventListener('change', onFilterChange);
-  }
+  var onFilterCheckboxEnterKeyDown = function (evt) {
+    var target = evt.target;
+    if (target.classList.contains('map__checkbox') === false) {
+      return false;
+    }
+    if (evt.code !== 'Enter') {
+      return false;
+    }
+    onFilterChange(evt);
+    target.checked = target.checked ? false : true;
+    return false;
+  };
 
   return (window.filter = {
     disableFliter: disableFliter,

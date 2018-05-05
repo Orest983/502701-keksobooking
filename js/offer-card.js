@@ -9,7 +9,6 @@
   var changeRoomWordEnding = function (quantity) {
     var onesOfANumber = quantity % 10;
     var wordEnding;
-
     switch (onesOfANumber) {
       case 1:
         wordEnding = 'а';
@@ -24,10 +23,10 @@
     }
     return 'комнат' + wordEnding;
   };
+
   var changeGuestsWordEnding = function (quantity) {
     var onesOfANumber = quantity % 10;
     var wordEnding;
-
     switch (onesOfANumber) {
       case 1:
         wordEnding = 'я';
@@ -37,27 +36,28 @@
     }
     return 'гост' + wordEnding;
   };
+
   var generateFeaturesList = function (arrFeatures) {
     var fragment = document.createDocumentFragment();
-    var featureTemplate = MAP_POPUP_FEATURE;
-    for (var i = 0; i < arrFeatures.length; i++) {
-      var item = featureTemplate.cloneNode(true);
-      item.classList.add('popup__feature--' + arrFeatures[i]);
+    arrFeatures.forEach(function (feature) {
+      var item = MAP_POPUP_FEATURE.cloneNode(true);
+      item.classList.add('popup__feature--' + feature);
       fragment.appendChild(item);
-    }
+    });
     return fragment;
   };
+
   var generatePopupPhotos = function (arrPhotos) {
     var fragment = document.createDocumentFragment();
-    var item = MAP_POPUP_PHOTO;
-    for (var i = 0; i < arrPhotos.length; i++) {
-      item = item.cloneNode(true);
-      item.src = arrPhotos[i];
+    arrPhotos.forEach(function (photo, i) {
+      var item = MAP_POPUP_PHOTO.cloneNode(true);
+      item.src = photo;
       item.alt = 'фото ' + i;
       fragment.appendChild(item);
-    }
+    });
     return fragment;
   };
+
   var generateMapCard = function (ad) {
     var mapCard = MAP_CARD.cloneNode(true);
     mapCard.querySelector('.popup__title').textContent = ad.offer.title;
@@ -93,22 +93,30 @@
 
     return mapCard;
   };
+
   var showOfferPopup = function (offer) {
-    var closePopup;
     window.map.MAP.insertBefore(generateMapCard(offer), MAP_FILTER_CONTAINER);
-    closePopup = document.querySelector('.popup__close');
+    var closePopup = document.querySelector('.popup__close');
     closePopup.addEventListener('click', onPopUpCloseClick);
+    document.addEventListener('keydown', onDocumentEscKeydown);
   };
+
   var closeOfferPopup = function () {
     var popup = document.querySelector('.popup');
     if (popup) {
       popup.remove();
+      document.removeEventListener('keydown', onDocumentEscKeydown);
+    }
+  };
+
+  var onDocumentEscKeydown = function (evt) {
+    if (evt.code === 'Escape') {
+      closeOfferPopup();
     }
   };
 
   var onPopUpCloseClick = function () {
-    var offer = document.querySelector('.popup');
-    closeOfferPopup(offer);
+    closeOfferPopup();
   };
 
   return (window.offerCard = {

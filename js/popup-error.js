@@ -7,14 +7,14 @@
   var showErrorPopUp = function (error) {
     ERROR_POPUP.classList.remove('hidden');
     ERROR_MESSAGE.textContent = error;
+    ERROR_CLOSE.addEventListener('click', onErrorCloseClick);
   };
 
   var onErrorCloseClick = function () {
     ERROR_POPUP.classList.add('hidden');
     ERROR_MESSAGE.textContent = '';
+    ERROR_CLOSE.removeEventListener('click', onErrorCloseClick);
   };
-
-  ERROR_CLOSE.addEventListener('click', onErrorCloseClick);
 
   return (window.popupError = {
     showErrorPopUp: showErrorPopUp

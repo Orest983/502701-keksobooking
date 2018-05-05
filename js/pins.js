@@ -7,28 +7,31 @@
   var MAP_MAIN_PIN_START_X = 375;
   var MAX_PINS_COUNT = 5;
 
-  // var offers;
-
   var getMainPinInitialAddress = function () {
     var x = Math.round(MAP_MAIN_PIN.offsetLeft + MAP_MAIN_PIN.offsetWidth / 2);
     var y = Math.round(MAP_MAIN_PIN.offsetTop + MAP_MAIN_PIN.offsetHeight / 2);
     return x + ', ' + y;
   };
+
   var setMainPinToInitialPosition = function () {
     MAP_MAIN_PIN.style.top = MAP_MAIN_PIN_START_X + 'px';
     MAP_MAIN_PIN.style.left = MAP_MAIN_PIN_START_Y + 'px';
   };
+
   var getMainPinRealAddress = function () {
     var x = Math.round(MAP_MAIN_PIN.offsetLeft + MAP_MAIN_PIN.offsetWidth / 2);
     var y = Math.round(MAP_MAIN_PIN.offsetTop + MAP_MAIN_PIN.offsetHeight);
     return x + ', ' + y;
   };
+
   var setPinOffsetX = function (x, width) {
     return x - width / 2;
   };
+
   var setPinOffsetY = function (y, height) {
     return y - height;
   };
+
   var generatePins = function (ads) {
     var pinTemplate = MAP_PIN;
     var fragment = document.createDocumentFragment();
@@ -48,6 +51,7 @@
     }
     return fragment;
   };
+
   var removePins = function () {
     var pins = window.map.MAP.querySelectorAll('.map__pin');
     for (var i = 0; i < pins.length; i++) {
@@ -105,6 +109,7 @@
     document.addEventListener('mouseup', onDocumentMouseUp);
     document.addEventListener('mousemove', onDocumentMouseMove);
   };
+
   var onMainPinMouseUp = function () {
     var pinAddress = getMainPinRealAddress();
     window.form.setInputAddressValue(pinAddress);
@@ -122,11 +127,11 @@
     };
     window.backend.getData(onLoad, window.popupError.showErrorPopUp);
   };
+
   var onPinClick = function (evt) {
-    var offer;
     var target = evt.target.closest('.map__pin');
     if (target && !target.classList.contains('map__pin--main')) {
-      offer = target.dataset['offerId'];
+      var offer = target.dataset['offerId'];
       window.offerCard.closeOfferPopup();
       window.offerCard.showOfferPopup(window.offers[offer]);
     }

@@ -12,6 +12,7 @@
   var disableMap = function () {
     MAP.classList.add('map--faded');
   };
+
   var enableMap = function () {
     MAP.classList.remove('map--faded');
   };
