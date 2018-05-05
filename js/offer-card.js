@@ -5,6 +5,7 @@
   var MAP_POPUP_FEATURE = MAP_TEMPLATE.querySelector('.popup__feature');
   var MAP_POPUP_PHOTO = MAP_TEMPLATE.querySelector('.popup__photo');
   var MAP_FILTER_CONTAINER = document.querySelector('.map__filters-container');
+  var currentOfferPopup = null;
 
   var changeRoomWordEnding = function (quantity) {
     var onesOfANumber = quantity % 10;
@@ -96,20 +97,18 @@
         .addEventListener('click', onPopUpCloseClick);
 
     document.addEventListener('keydown', onDocumentEscKeydown);
-
     return mapCard;
   };
 
   var showOfferPopup = function (offer) {
-    window.popup = window.map.MAP.insertBefore(
-        generateMapCard(offer),
-        MAP_FILTER_CONTAINER
-    );
+    closeOfferPopup();
+    currentOfferPopup = generateMapCard(offer);
+    window.map.MAP.insertBefore(currentOfferPopup, MAP_FILTER_CONTAINER);
   };
 
   var closeOfferPopup = function () {
-    if (window.popup) {
-      window.popup.remove();
+    if (currentOfferPopup) {
+      currentOfferPopup.remove();
       document.removeEventListener('keydown', onDocumentEscKeydown);
     }
   };

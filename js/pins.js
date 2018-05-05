@@ -63,7 +63,7 @@
   };
 
   // pins event handlers
-  var onMapManinPinMouseDown = function (evt) {
+  var onMapMainPinMouseDown = function (evt) {
     evt.preventDefault();
     var start = {
       x: evt.clientX,
@@ -111,22 +111,24 @@
   };
 
   var onMainPinMouseUp = function () {
-    var pinAddress = getMainPinRealAddress();
-    window.form.setInputAddressValue(pinAddress);
-    window.map.enableMap();
-    window.form.enableAdForm();
-    window.form.enableFormFieldsets();
+    if (window.map.MAP.classList.contains('map--faded')) {
+      var pinAddress = getMainPinRealAddress();
+      window.form.setInputAddressValue(pinAddress);
+      window.map.enableMap();
+      window.form.enableAdForm();
+      window.form.enableFormFieldsets();
 
-    var onLoad = function (data) {
-      if (!window.offers) {
-        window.offers = window.data.generateOffers(JSON.parse(data));
-      }
+      var onLoad = function (data) {
+        if (!window.offers) {
+          window.offers = window.data.generateOffers(JSON.parse(data));
+        }
 
-      var pins = generatePins(window.offers);
-      MAP_PINS.appendChild(pins);
-      window.filter.enableFilter();
-    };
-    window.backend.getData(onLoad, window.popupError.showErrorPopUp);
+        var pins = generatePins(window.offers);
+        MAP_PINS.appendChild(pins);
+        window.filter.enableFilter();
+      };
+      window.backend.getData(onLoad, window.popupError.showErrorPopUp);
+    }
   };
 
   var onPinClick = function (evt) {
@@ -140,7 +142,7 @@
   // pins event handlers
   MAP_PINS.addEventListener('click', onPinClick);
   MAP_MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
-  MAP_MAIN_PIN.addEventListener('mousedown', onMapManinPinMouseDown);
+  MAP_MAIN_PIN.addEventListener('mousedown', onMapMainPinMouseDown);
 
   return (window.pins = {
     MAP_PINS: MAP_PINS,
