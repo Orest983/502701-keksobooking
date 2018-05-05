@@ -113,10 +113,10 @@
 
   var onFilterChange = function (evt) {
     var target = evt.target;
+    if (target.classList.contains('map__checkbox') && evt.code === 'Enter') {
+      target.checked = !target.checked;
+    }
     return window.util.debounce(function () {
-      if (target.classList.contains('map__checkbox') && evt.code === 'Enter') {
-        target.checked = !target.checked;
-      }
       setFilterCriteria(target);
       applyFilter(window.offers);
     }, FILTER_TIMEOUT);

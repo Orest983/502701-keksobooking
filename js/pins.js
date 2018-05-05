@@ -62,7 +62,6 @@
     }
   };
 
-  // pins event handlers
   var onMapMainPinMouseDown = function (evt) {
     evt.preventDefault();
     var start = {
@@ -139,7 +138,6 @@
     }
   };
 
-  // pins event handlers
   MAP_PINS.addEventListener('click', onPinClick);
   MAP_MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
   MAP_MAIN_PIN.addEventListener('mousedown', onMapMainPinMouseDown);
