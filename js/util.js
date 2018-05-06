@@ -1,8 +1,8 @@
 'use strict';
 (function () {
   var Key = {
-    ENTER_KEY: 13,
-    ESCAPE_KEY: 27
+    ENTER: 13,
+    ESCAPE: 27
   };
   var getRandomMinMax = function (min, max) {
     return Math.floor(min + Math.random() * (max + 1 - min));
