@@ -4,14 +4,14 @@
   var FILTER_TIMEOUT = 500;
   var FILTER_MAX_RESULT = 5;
   var Message = {
-    noResult: 'Совпадений не найдено, смягчите условия поиска!'
+    NO_RESULT: 'Совпадений не найдено, смягчите условия поиска!'
   };
-
-  var FilterSelect = ['type', 'rooms', 'guests'];
+  var ENTER_KEY = 13;
+  var FILTER_SELECT_TYPES = ['type', 'rooms', 'guests'];
 
   var Price = {
-    low: 10000,
-    high: 50000
+    LOW: 10000,
+    HIGH: 50000
   };
 
   var filterCriteria = {
@@ -43,7 +43,7 @@
     window.offerCard.closeOfferPopup();
     window.pins.removePins();
     if (filtredOffers.length === 0) {
-      window.popupError.showErrorPopUp(Message.noResult);
+      window.popupError.showErrorPopUp(Message.NO_RESULT);
     } else {
       var pins = window.pins.generatePins(filtredOffers);
       window.pins.MAP_PINS.appendChild(pins);
@@ -51,19 +51,17 @@
   };
 
   var filterFeatures = function (offers) {
-    if (filterCriteria.features.length === 0) {
-      return offers;
-    }
-
-    return offers.filter(function (offerItem) {
-      return filterCriteria.features.every(function (feature) {
-        return offerItem.offer.features.indexOf(feature) !== -1;
-      });
-    });
+    return filterCriteria.features.length
+      ? offers.filter(function (offerItem) {
+        return filterCriteria.features.every(function (feature) {
+          return offerItem.offer.features.indexOf(feature) !== -1;
+        });
+      })
+      : offers;
   };
 
   var filterSelect = function (offers) {
-    return FilterSelect.reduce(function (acc, currentFilter) {
+    return FILTER_SELECT_TYPES.reduce(function (acc, currentFilter) {
       return filterCriteria[currentFilter] === 'any'
         ? acc
         : acc.filter(function (it) {
@@ -76,11 +74,11 @@
     return offers.filter(function (elem) {
       switch (filterCriteria.price) {
         case 'low':
-          return elem.offer.price <= Price.low;
+          return elem.offer.price <= Price.LOW;
         case 'middle':
-          return elem.offer.price > Price.low && elem.offer.price < Price.high;
+          return elem.offer.price > Price.LOW && elem.offer.price < Price.HIGH;
         case 'high':
-          return elem.offer.price >= Price.high;
+          return elem.offer.price >= Price.HIGH;
         default:
           return true;
       }
@@ -110,10 +108,12 @@
       }
     }
   };
-
   var onFilterChange = function (evt) {
     var target = evt.target;
-    if (target.classList.contains('map__checkbox') && evt.code === 'Enter') {
+    if (
+      target.classList.contains('map__checkbox') &&
+      evt.keyCode === ENTER_KEY
+    ) {
       target.checked = !target.checked;
     }
     return window.util.debounce(function () {
@@ -124,6 +124,7 @@
 
   return (window.filter = {
     disableFliter: disableFliter,
-    enableFilter: enableFilter
+    enableFilter: enableFilter,
+    ENTER_KEY: ENTER_KEY
   });
 })();

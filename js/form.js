@@ -17,6 +17,7 @@
     for (var i = 0; i < TEXT_INPUTS.length; i++) {
       removeErrorClass(TEXT_INPUTS[i]);
     }
+    AD_FORM.reset();
     window.pins.setMainPinToInitialPosition();
     disableAdForm();
     window.offerCard.closeOfferPopup();

@@ -12,13 +12,13 @@
     400: 'Плохой запрос',
     404: 'Страница не найдена',
     500: 'Ошибка сервера',
-    timeout:
+    TIMEOUT:
       'Превышено время ожидания ответа сервера, \n\r повторите запрос позднее'
   };
 
   var Url = {
-    get: 'https://js.dump.academy/keksobooking/data',
-    post: 'https://js.dump.academy/keksobooking'
+    GET: 'https://js.dump.academy/keksobooking/data',
+    POST: 'https://js.dump.academy/keksobooking'
   };
 
   var REQUEST_TIMEOUT = 2000;
@@ -52,7 +52,7 @@
     });
 
     xhr.addEventListener('timeout', function () {
-      var error = ErrorMessage.timeout;
+      var error = ErrorMessage.TIMEOUT;
       window.popupError.showErrorPopUp(error);
     });
 
@@ -61,11 +61,11 @@
   };
 
   var getData = function (onLoad, onError) {
-    load(Url.get, 'GET', null, onLoad, onError);
+    load(Url.GET, 'GET', null, onLoad, onError);
   };
 
   var postData = function (data, onLoad, onError) {
-    load(Url.post, 'POST', data, onLoad, onError);
+    load(Url.POST, 'POST', data, onLoad, onError);
   };
 
   return (window.backend = {

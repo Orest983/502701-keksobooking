@@ -1,10 +1,12 @@
 'use strict';
 (function () {
-  var MAP_TEMPLATE = document.querySelector('template').content;
+  var MAP_TEMPLATE = document.querySelector('.template').content;
   var MAP_CARD = MAP_TEMPLATE.querySelector('.map__card');
+
   var MAP_POPUP_FEATURE = MAP_TEMPLATE.querySelector('.popup__feature');
   var MAP_POPUP_PHOTO = MAP_TEMPLATE.querySelector('.popup__photo');
   var MAP_FILTER_CONTAINER = document.querySelector('.map__filters-container');
+  var ESCAPE_KEY = 27;
   var currentOfferPopup = null;
 
   var changeRoomWordEnding = function (quantity) {
@@ -114,7 +116,7 @@
   };
 
   var onDocumentEscKeydown = function (evt) {
-    if (evt.code === 'Escape') {
+    if (evt.keyCode === ESCAPE_KEY) {
       closeOfferPopup();
     }
   };
