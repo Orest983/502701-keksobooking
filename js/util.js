@@ -1,5 +1,9 @@
 'use strict';
 (function () {
+  var Keys = {
+    ENTER_KEY: 13,
+    ESCAPE_KEY: 27
+  };
   var getRandomMinMax = function (min, max) {
     return Math.floor(min + Math.random() * (max + 1 - min));
   };
@@ -14,6 +18,7 @@
 
   window.util = {
     getRandomMinMax: getRandomMinMax,
-    debounce: debounce
+    debounce: debounce,
+    Keys: Keys
   };
 })();

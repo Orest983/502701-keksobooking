@@ -6,7 +6,6 @@
   var Message = {
     NO_RESULT: 'Совпадений не найдено, смягчите условия поиска!'
   };
-  var ENTER_KEY = 13;
   var FILTER_SELECT_TYPES = ['type', 'rooms', 'guests'];
 
   var Price = {
@@ -112,7 +111,7 @@
     var target = evt.target;
     if (
       target.classList.contains('map__checkbox') &&
-      evt.keyCode === ENTER_KEY
+      evt.keyCode === window.util.Keys.ENTER_KEY
     ) {
       target.checked = !target.checked;
     }
@@ -124,7 +123,6 @@
 
   return (window.filter = {
     disableFliter: disableFliter,
-    enableFilter: enableFilter,
-    ENTER_KEY: ENTER_KEY
+    enableFilter: enableFilter
   });
 })();
