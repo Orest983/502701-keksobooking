@@ -115,7 +115,7 @@
   };
 
   var onDocumentEscKeydown = function (evt) {
-    if (evt.keyCode === window.util.Keys.ESCAPE_KEY) {
+    if (evt.keyCode === window.util.Key.ESCAPE_KEY) {
       closeOfferPopup();
     }
   };

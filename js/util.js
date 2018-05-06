@@ -1,6 +1,6 @@
 'use strict';
 (function () {
-  var Keys = {
+  var Key = {
     ENTER_KEY: 13,
     ESCAPE_KEY: 27
   };
@@ -19,6 +19,6 @@
   window.util = {
     getRandomMinMax: getRandomMinMax,
     debounce: debounce,
-    Keys: Keys
+    Key: Key
   };
 })();

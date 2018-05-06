@@ -62,7 +62,7 @@
     }
   };
 
-  var onMapMainPinMouseDown = function (evt) {
+  var onMainPinMouseDown = function (evt) {
     evt.preventDefault();
     var start = {
       x: evt.clientX,
@@ -140,7 +140,7 @@
 
   MAP_PINS.addEventListener('click', onPinClick);
   MAP_MAIN_PIN.addEventListener('click', onMainPinClick);
-  MAP_MAIN_PIN.addEventListener('mousedown', onMapMainPinMouseDown);
+  MAP_MAIN_PIN.addEventListener('mousedown', onMainPinMouseDown);
 
   return (window.pins = {
     MAP_PINS: MAP_PINS,

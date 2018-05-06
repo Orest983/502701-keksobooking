@@ -111,7 +111,7 @@
     var target = evt.target;
     if (
       target.classList.contains('map__checkbox') &&
-      evt.keyCode === window.util.Keys.ENTER_KEY
+      evt.keyCode === window.util.Key.ENTER_KEY
     ) {
       target.checked = !target.checked;
     }
